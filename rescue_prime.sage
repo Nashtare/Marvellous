@@ -27,8 +27,8 @@ def get_number_of_rounds( p, m, capacity, security_level, alpha ):
         if binomial(v(l1) + dcon(l1), v(l1))^2 > target:
             break
 
-    # set a minimum value for sanity and add 50%
-    return ceil(1.5 * max(5, l1))
+    # set a minimum value for sanity and add 40%
+    return ceil(1.4 * max(5, l1))
 
 def get_alphas( p ):
     for alpha in range(3, p):
@@ -177,3 +177,29 @@ def rescue_prime_sponge( parameters, input_sequence, output_length ):
 
     return output_sequence[:output_length]
 
+
+########################################################
+
+# Main Rescue-Prime instantiation for Toposware
+
+p = 2**64 - 2**32 + 1 # STARK-friendly Goldilocks field
+S = 128 # Security level
+m = 12 # Number of base field elements
+c = 4 # Number of elements dedicated to the capacity
+p, m, capacity, security_level, alpha, alphainv, N, MDS, round_constants = rescue_prime_parameters(p, m, c, S)
+# The MDS matrix is changed for optimized MDS layer in the frequency domain
+# See https://github.com/novifinancial/winterfell/pull/104
+MDS = matrix.circulant([7, 23, 8, 26, 13, 10, 9, 7, 6, 22, 21, 8])
+parameters = p, m, capacity, security_level, alpha, alphainv, N, MDS, round_constants
+
+# Test vectors
+Fp = GF(p)
+L = [[0 for i in range(8)], [1 for i in range(8)]]
+for j in range(10):
+    L.append([Fp.random_element() for i in range(8)])
+print(L)
+
+R = []
+for l in L:
+    R.append(rescue_prime_sponge(parameters, l, 4))
+print(R)
