@@ -180,16 +180,17 @@ def rescue_prime_sponge( parameters, input_sequence, output_length ):
 
 ########################################################
 
-# Main Rescue-Prime instantiation for Toposware
+# Rescue-Prime instantiation intended to be used with Jive compression mode
 
-p = 2**64 - 2**32 + 1 # STARK-friendly Goldilocks field
-S = 128 # Security level
-m = 12 # Number of base field elements
-c = 4 # Number of elements dedicated to the capacity
-p, m, capacity, security_level, alpha, alphainv, N, MDS, round_constants = rescue_prime_parameters(p, m, c, S)
+p = 2**64 - 2**32 + 1  # STARK-friendly Goldilocks field
+S = 128  # Security level
+m = 8  # Number of base field elements
+c = 4  # Number of elements dedicated to the capacity
+p, m, capacity, security_level, alpha, alphainv, N, MDS, round_constants = rescue_prime_parameters(
+    p, m, c, S)
 # The MDS matrix is changed for optimized MDS layer in the frequency domain
 # See https://github.com/novifinancial/winterfell/pull/104
-MDS = matrix.circulant([7, 23, 8, 26, 13, 10, 9, 7, 6, 22, 21, 8])
+MDS = matrix.circulant([23, 8, 13, 10, 7, 6, 21, 8])
 parameters = p, m, capacity, security_level, alpha, alphainv, N, MDS, round_constants
 
 # Test vectors
